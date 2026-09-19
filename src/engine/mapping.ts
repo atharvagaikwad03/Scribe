@@ -49,13 +49,21 @@ export function mapChangedFiles(
   const isIgnored = compileGlobs(ignoreGlobs);
   const matchers = generators
     .filter((g) => pkg.sections[g.id].enabled && !g.alwaysRun)
-    .map((g) => ({ g, match: compileGlobs(watchGlobsFor(g, pkg)) }));
+    .map((g) => ({
+      g,
+      match: compileGlobs(watchGlobsFor(g, pkg)),
+      matchAny: g.watchAnyStatus?.length ? compileGlobs(g.watchAnyStatus) : () => false,
+    }));
 
   return changes.map((file) => {
     const paths = file.from ? [file.path, file.from] : [file.path];
     if (paths.every(isIgnored)) return { file, outcome: { kind: 'ignored', by: 'ignore globs' } };
     const sections = new Set<SectionId>();
-    for (const { g, match } of matchers) {
+    for (const { g, match, matchAny } of matchers) {
+      if (paths.some(matchAny)) {
+        sections.add(g.id);
+        continue;
+      }
       const statusOk =
         !g.statuses ||
         g.statuses.includes(file.status) ||

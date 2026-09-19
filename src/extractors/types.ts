@@ -49,6 +49,8 @@ export interface SectionGenerator<T = unknown> {
   defaultWatch: string[];
   /** Limit which change statuses count for the watch globs (default: all). */
   statuses?: Array<ChangedFile['status']>;
+  /** Globs that count regardless of `statuses` (e.g. manifests for the structure section). */
+  watchAnyStatus?: string[];
   /** Run on every invocation where HEAD != lastSha regardless of changed files. */
   alwaysRun?: boolean;
   extract(ctx: ExtractContext): Promise<ExtractResult<T>>;
