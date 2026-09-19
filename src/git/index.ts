@@ -132,15 +132,22 @@ export class Git {
     return r.stdout.split('\0').filter(Boolean);
   }
 
-  async commitsBetween(base: string | undefined, head = 'HEAD', limit = 500): Promise<Commit[]> {
+  async commitsBetween(
+    base: string | undefined,
+    head = 'HEAD',
+    opts: { limit?: number; paths?: string[] } = {},
+  ): Promise<Commit[]> {
     const range = base ? `${base}..${head}` : head;
     const fmt = ['%H', '%s', '%b', '%an', '%ae'].join('%x1f') + '%x1e';
-    const r = await this.git(
-      ['log', `--max-count=${limit}`, '--no-merges', `--format=${fmt}`, range],
-      {
-        allowFailure: true,
-      },
-    );
+    const args = [
+      'log',
+      `--max-count=${opts.limit ?? 500}`,
+      '--no-merges',
+      `--format=${fmt}`,
+      range,
+    ];
+    if (opts.paths?.length) args.push('--', ...opts.paths);
+    const r = await this.git(args, { allowFailure: true });
     if (r.code !== 0) return [];
     return r.stdout
       .split('\x1e')
@@ -157,6 +164,19 @@ export class Git {
           authorEmail,
         };
       });
+  }
+
+  /** `files changed, insertions, deletions` for one commit. */
+  async shortStat(sha: string): Promise<{ files: number; insertions: number; deletions: number }> {
+    const r = await this.git(['show', '--shortstat', '--format=', sha], { allowFailure: true });
+    const m = /(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/.exec(
+      r.stdout,
+    );
+    return {
+      files: Number(m?.[1] ?? 0),
+      insertions: Number(m?.[2] ?? 0),
+      deletions: Number(m?.[3] ?? 0),
+    };
   }
 
   async commitMessage(rev = 'HEAD'): Promise<string> {

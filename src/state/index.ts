@@ -30,6 +30,12 @@ export interface ApiChangeEntry {
   previous?: string;
 }
 
+export interface HighlightEntry {
+  /** First SHA referenced by the bullet; used for dedupe and pruning. */
+  sha: string;
+  text: string;
+}
+
 export interface PackageState {
   version: number;
   toolVersion: string;
@@ -39,6 +45,8 @@ export interface PackageState {
   changelog: {
     entries: ChangelogEntry[];
     apiChanges: ApiChangeEntry[];
+    /** Validated LLM summaries (optional feature). */
+    highlights?: HighlightEntry[];
   };
 }
 
@@ -76,6 +84,7 @@ export async function loadState(
     changelog: {
       entries: loaded.changelog?.entries ?? [],
       apiChanges: loaded.changelog?.apiChanges ?? [],
+      ...(loaded.changelog?.highlights ? { highlights: loaded.changelog.highlights } : {}),
     },
   };
 }

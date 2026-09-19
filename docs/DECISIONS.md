@@ -101,3 +101,22 @@ committing. Because extractors read the working tree anyway, this keeps the
 present in a config file. A Dockerfile's only purpose is to be built, so we
 consider this reading the config, not guessing. Everything else (scripts,
 make targets, console scripts) is copied verbatim.
+
+## D-016: Changelog history lives in state, not in the README
+
+The rendered changelog is a pure function of `state.changelog` (entries,
+API changes, optional highlights). New commits since `lastSha` are parsed,
+prepended, deduped by SHA and capped to `changelog.maxEntries`. We never
+parse the README's changelog body back, so a human cannot "corrupt" the
+history by editing it (they would only trigger the manual-edit flag), and the
+output is byte-identical for identical state. No dates are rendered.
+
+## D-017: LLM output is validated per bullet and cached by input hash
+
+The optional LLM sees only commit subjects and diff stats. Every bullet must
+carry a SHA that prefixes a commit in the input; one bad bullet rejects the
+whole response and the deterministic rendering is used (with a diagnostic).
+Accepted output is cached in `.readme-sync/llm-cache.json` keyed by a hash
+of (provider, model, stats), so re-running on the same inputs never calls the
+model again and can never drift in tone. Highlights are pruned when their
+commit falls off the entry cap.

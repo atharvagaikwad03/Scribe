@@ -266,6 +266,7 @@ async function planPackage(
     git,
     headSha,
     state: stateBefore,
+    stateAfter: base.stateAfter,
     fullMode,
     changedFiles: ownFiles,
     watchedChanges: watched,

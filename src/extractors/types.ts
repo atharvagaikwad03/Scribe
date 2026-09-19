@@ -29,6 +29,8 @@ export interface ExtractContext {
   git: Git;
   headSha: string;
   state: PackageState;
+  /** Mutable copy that will be persisted if the run is applied. Extractors that keep history (changelog) update it. */
+  stateAfter: PackageState;
   /** True when there is no usable lastSha and every enabled section is re-derived. */
   fullMode: boolean;
   /** Changed files (package-relative) since lastSha, all of them, not just the ones this section watches. */
