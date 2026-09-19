@@ -23,11 +23,13 @@ export interface PackageJson {
   workspaces?: string[] | { packages?: string[] };
 }
 
+/** Missing -> undefined. Malformed -> throws (a manifest we cannot read is a reason to fail closed, not to guess). */
 export async function readPackageJson(dir: string): Promise<PackageJson | undefined> {
+  const file = path.join(dir, 'package.json');
   try {
-    return await readJsonIfExists<PackageJson>(path.join(dir, 'package.json'));
-  } catch {
-    return undefined;
+    return await readJsonIfExists<PackageJson>(file);
+  } catch (err) {
+    throw new Error(`package.json is not valid JSON: ${(err as Error).message}`);
   }
 }
 
@@ -38,8 +40,8 @@ export async function readPyProject(dir: string): Promise<PyProject | undefined>
   if (text === undefined) return undefined;
   try {
     return parseToml(text) as PyProject;
-  } catch {
-    return undefined;
+  } catch (err) {
+    throw new Error(`pyproject.toml is not valid TOML: ${(err as Error).message}`);
   }
 }
 

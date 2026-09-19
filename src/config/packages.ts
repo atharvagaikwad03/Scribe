@@ -110,9 +110,10 @@ export async function discoverWorkspaces(repoRoot: string): Promise<string[]> {
     const parsed = YAML.parse(pnpmWs) as { packages?: string[] } | null;
     if (parsed?.packages) globs.push(...parsed.packages);
   }
+  // A malformed root package.json is reported by the extractors (fail closed); discovery just skips it.
   const pkgJson = await readJsonIfExists<{ workspaces?: string[] | { packages?: string[] } }>(
     path.join(repoRoot, 'package.json'),
-  );
+  ).catch(() => undefined);
   if (pkgJson?.workspaces) {
     const ws = Array.isArray(pkgJson.workspaces)
       ? pkgJson.workspaces

@@ -36,7 +36,8 @@ function collectExports(exp: unknown, subpath: string, out: EntryPoint[]): void 
 /** Entry points declared in manifests: package.json main/module/bin/exports, pyproject scripts, Dockerfile CMD/ENTRYPOINT. */
 export async function detectEntryPoints(dir: string): Promise<EntryPoint[]> {
   const out: EntryPoint[] = [];
-  const pkg = await readPackageJson(dir);
+  // Entry points are supplementary here; a malformed manifest is surfaced by the extractors instead.
+  const pkg = await readPackageJson(dir).catch(() => undefined);
   if (pkg) {
     if (pkg.main) out.push({ file: norm(pkg.main), source: 'package.json#main', role: 'main' });
     if (pkg.module)
@@ -50,7 +51,7 @@ export async function detectEntryPoints(dir: string): Promise<EntryPoint[]> {
     }
     collectExports(pkg.exports, '.', out);
   }
-  const py = await readPyProject(dir);
+  const py = await readPyProject(dir).catch(() => undefined);
   if (py) {
     const scripts: Record<string, string> = {
       ...(py.project?.scripts ?? {}),

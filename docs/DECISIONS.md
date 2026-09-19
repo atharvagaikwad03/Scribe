@@ -120,3 +120,13 @@ Accepted output is cached in `.readme-sync/llm-cache.json` keyed by a hash
 of (provider, model, stats), so re-running on the same inputs never calls the
 model again and can never drift in tone. Highlights are pruned when their
 commit falls off the entry cap.
+
+## D-018: A malformed manifest is an extractor error, not "no manifest"
+
+`package.json` that fails to parse (or `pyproject.toml` that is not valid
+TOML) makes `readPackageJson` / `readPyProject` throw, so every section that
+reads it is flagged with `extractor-error` and left untouched. Silently
+treating it as absent would render "no dependencies" into the README, which
+is exactly the kind of confident wrong output the tool exists to avoid.
+Workspace discovery and entry-point detection swallow the same error because
+they are supplementary and the extractors already report it.

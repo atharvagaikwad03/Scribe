@@ -90,33 +90,63 @@ export function buildCommentBody(
   return lines.join('\n');
 }
 
+/** The subset of Octokit we use, so tests can inject a fake. */
+export interface CommentClient {
+  listComments(p: {
+    owner: string;
+    repo: string;
+    issue_number: number;
+  }): Promise<Array<{ id: number; body?: string; html_url: string }>>;
+  updateComment(p: {
+    owner: string;
+    repo: string;
+    comment_id: number;
+    body: string;
+  }): Promise<{ html_url: string }>;
+  createComment(p: {
+    owner: string;
+    repo: string;
+    issue_number: number;
+    body: string;
+  }): Promise<{ html_url: string }>;
+}
+
+export function octokitClient(token: string): CommentClient {
+  const octokit = getOctokit(token);
+  return {
+    listComments: (p) =>
+      octokit.paginate(octokit.rest.issues.listComments, { ...p, per_page: 100 }),
+    updateComment: async (p) => (await octokit.rest.issues.updateComment(p)).data,
+    createComment: async (p) => (await octokit.rest.issues.createComment(p)).data,
+  };
+}
+
 export async function upsertComment(
   ctx: PullRequestContext,
   body: string,
-): Promise<{ action: 'created' | 'updated'; url: string }> {
-  const octokit = getOctokit(ctx.token);
-  const existing = await octokit.paginate(octokit.rest.issues.listComments, {
+  client: CommentClient = octokitClient(ctx.token),
+): Promise<{ action: 'created' | 'updated' | 'unchanged'; url: string }> {
+  const existing = await client.listComments({
     owner: ctx.owner,
     repo: ctx.repo,
     issue_number: ctx.number,
-    per_page: 100,
   });
   const mine = existing.find((c) => c.body?.includes(COMMENT_MARKER));
   if (mine) {
-    if (mine.body === body) return { action: 'updated', url: mine.html_url };
-    const res = await octokit.rest.issues.updateComment({
+    if (mine.body === body) return { action: 'unchanged', url: mine.html_url };
+    const res = await client.updateComment({
       owner: ctx.owner,
       repo: ctx.repo,
       comment_id: mine.id,
       body,
     });
-    return { action: 'updated', url: res.data.html_url };
+    return { action: 'updated', url: res.html_url };
   }
-  const res = await octokit.rest.issues.createComment({
+  const res = await client.createComment({
     owner: ctx.owner,
     repo: ctx.repo,
     issue_number: ctx.number,
     body,
   });
-  return { action: 'created', url: res.data.html_url };
+  return { action: 'created', url: res.html_url };
 }
