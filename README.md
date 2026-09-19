@@ -127,7 +127,7 @@ The LLM is **off by default**. When enabled (`ANTHROPIC_API_KEY`), it only ever 
 
 ## Project structure
 
-<!-- autogen:start:structure hash=bc1a5ef4bca0 -->
+<!-- autogen:start:structure hash=b33d47bda512 -->
 |  |  |
 | --- | --- |
 | Language | TypeScript, JavaScript |
@@ -150,6 +150,7 @@ The LLM is **off by default**. When enabled (`ANTHROPIC_API_KEY`), it only ever 
 examples/  (1 file)
 schema/  (1 file)
 scripts/  (1 file)
+specs/  (7 files)
 src/
   action/  (3 files)
   cli/  (5 files)
@@ -177,13 +178,14 @@ pnpm-workspace.yaml
 tsconfig.json
 tsup.action.config.ts
 tsup.config.ts
+ubiquitous-tribble-readme-sync.zip
 vitest.config.ts
 ```
 <!-- autogen:end:structure -->
 
 ## API
 
-<!-- autogen:start:api hash=386559256604 -->
+<!-- autogen:start:api hash=169ae0834718 -->
 **Exports** (from `src/index.ts`)
 
 | Name | Kind | Signature |
@@ -195,7 +197,7 @@ vitest.config.ts
 | `COMMENT_MARKER` | const | `const COMMENT_MARKER: "<!-- readme-sync:comment -->"` |
 | `Config` | type | `type Config = z.infer<typeof configSchema>;` |
 | `CONFIG_FILENAME` | const | `const CONFIG_FILENAME: ".readme-sync.yml"` |
-| `configSchema` | const | `const configSchema: z.ZodObject<{ version: z.ZodDefault<z.ZodLiteral<1>>; packages: z.ZodDefault<z.ZodArray<z.ZodObject<{ path: z.ZodDefault<z.ZodString>; readme: z.ZodDefault<z.ZodString>; sections: z.ZodDefault<z.ZodObject<{ structure: z…` |
+| `configSchema` | const | `const configSchema: any` |
 | `createLlmProvider` | function | `createLlmProvider(config: Config, override?: string): LlmProvider \| undefined` |
 | `FlagReason` | type | `type FlagReason = \| 'unmapped-surface-file' \| 'low-confidence' \| 'extractor-error' \| 'manual-edit' \| 'malformed-markers' \| 'missing-marker' \| 'render-error';` |
 | `formatFlag` | function | `formatFlag(f: StaleFlag): string` |
@@ -205,7 +207,7 @@ vitest.config.ts
 | `LlmProvider` | interface | `interface LlmProvider { readonly name: string; complete(req: LlmRequest): Promise<string>; }` |
 | `loadConfig` | function | `loadConfig(repoRoot: string, configPath?: string): Promise<LoadedConfig>` |
 | `MarkerRegion` | interface | `interface MarkerRegion { id: string; hash: string \| undefined; start: number; end: number; bodyStart: number; bodyEnd: number; body: string; attrs: Record<string, string>; }` |
-| `MockProvider` | class | `class MockProvider { calls: LlmRequest[]; complete(req: LlmRequest): Promise<string>; name: "mock"; reply(text: string): this }` |
+| `MockProvider` | class | `class MockProvider { calls: {}; complete(req: LlmRequest): Promise<string>; name: "mock"; reply(text: string): this }` |
 | `PackageConfig` | type | `type PackageConfig = z.infer<typeof packageConfigSchema>;` |
 | `PackagePlan` | interface | `interface PackagePlan { pkg: ResolvedPackage; headSha: string; baseSha: string \| null; fullMode: boolean; fullModeReason?: string; files: MappedFile[]; sections: SectionPlan[]; flags: StaleFlag[]; readmeBefore?: string; readmeAfter?: string; readmeChanged: boolean; stateBefore: PackageState; stateAfter: PackageState; error?: string; _contexts?: Map<SectionId, ExtractContext>; }` |
 | `parseConfig` | function | `parseConfig(input: unknown, sourceName?: string): Config` |
@@ -313,9 +315,12 @@ pnpm install
 
 ## Changelog
 
-<!-- autogen:start:changelog hash=5dea217f09fa -->
+<!-- autogen:start:changelog hash=7674fbe3212d -->
 **Other**
 
+- dogfood readme-sync on itself, docs, CI (`40f4622`)
+- Add files via upload (`1d33fb1`)
+- Add technical specs for the README sync engine (`5f40bbb`)
 - GitHub Action, check|commit|pr modes, loop guard, rebase-retry, monorepo (`10c58db`)
 - fail-closed flag coverage, PR comment upsert, comment/explain hardening (`7b09a52`)
 - changelog extractor (deterministic + optional validated LLM) (`7c472cc`)
@@ -327,6 +332,8 @@ pnpm install
 
 **API changes**
 
+- Changed export `configSchema`: `const configSchema: z.ZodObject<{ version: z.ZodDefault<z.ZodLiteral<1>>; packages: z.ZodDefault<z.ZodArray<z.ZodObject<{ path: z.ZodDefault<z.ZodString>; readme: z.ZodDefault<z.ZodString>; sections: z.ZodDefault<z.ZodObject<{ structure: z…` → `const configSchema: any`
+- Changed export `MockProvider`: `class MockProvider { calls: LlmRequest[]; complete(req: LlmRequest): Promise<string>; name: "mock"; reply(text: string): this }` → `class MockProvider { calls: {}; complete(req: LlmRequest): Promise<string>; name: "mock"; reply(text: string): this }`
 - Changed export `AnthropicProvider`: `const AnthropicProvider: typeof AnthropicProvider` → `class AnthropicProvider(apiKey: string, baseUrl?) { complete(req: LlmRequest): Promise<string>; name: "anthropic" }`
 - Changed export `apply`: `apply(run2: any): Promise<{ written: any[]; }>` → `apply(run: RunPlan): Promise<ApplyResult>`
 - Changed export `bodyHash`: `bodyHash(body: any): string` → `bodyHash(body: string): string`
@@ -355,8 +362,6 @@ pnpm install
 - Changed export `RunPlan`: `interface RunPlan { repoRoot: string; headSha: string; packages: PackagePlan[]; flags: StaleFlag[]; /** True when at least one README would change. */ changed: boolean; }` → `interface RunPlan { repoRoot: string; headSha: string; packages: PackagePlan[]; flags: StaleFlag[]; changed: boolean; }`
 - Changed export `SectionPlan`: `interface SectionPlan { id: SectionId; status: SectionStatus; reason: string; /** Package-relative files that made this section run. */ affectedBy: string[]; confidence?: number; diagnostics: string[]; oldBody?: string; newBody?: string; inputHash?: string; data?: unknown; /** Set when extraction succeeded (used for afterWrite hooks). */ extracted: boolean; }` → `interface SectionPlan { id: SectionId; status: SectionStatus; reason: string; affectedBy: string[]; confidence?: number; diagnostics: string[]; oldBody?: string; newBody?: string; inputHash?: string; data?: unknown; extracted: boolean; }`
 - Changed export `spliceMany`: `spliceMany(source: any, updates: any): any` → `spliceMany(source: string, updates: Array<{ region: MarkerRegion; body: string; }>): string`
-- Changed export `spliceRegion`: `spliceRegion(source: any, region: any, newBody: any): string` → `spliceRegion(source: string, region: MarkerRegion, newBody: string): string`
-- Changed export `StaleFlag`: `interface StaleFlag { /** Package path ("." for root). */ pkg: string; /** Section affected, or undefined when the flag is not attributable to one section. */ section?: SectionId; reason: FlagReason; message: string; /** Package-relative files that triggered the flag. */ files: string[]; }` → `interface StaleFlag { pkg: string; section?: SectionId; reason: FlagReason; message: string; files: string[]; }`
 <!-- autogen:end:changelog -->
 
 ## Design notes

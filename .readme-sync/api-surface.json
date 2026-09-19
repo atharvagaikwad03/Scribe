@@ -112,7 +112,7 @@
       "category": "export",
       "kind": "const",
       "name": "configSchema",
-      "signature": "const configSchema: z.ZodObject<{ version: z.ZodDefault<z.ZodLiteral<1>>; packages: z.ZodDefault<z.ZodArray<z.ZodObject<{ path: z.ZodDefault<z.ZodString>; readme: z.ZodDefault<z.ZodString>; sections: z.ZodDefault<z.ZodObject<{ structure: z…",
+      "signature": "const configSchema: any",
       "file": "src/config/schema.ts",
       "confidence": 1
     },
@@ -192,7 +192,7 @@
       "category": "export",
       "kind": "class",
       "name": "MockProvider",
-      "signature": "class MockProvider { calls: LlmRequest[]; complete(req: LlmRequest): Promise<string>; name: \"mock\"; reply(text: string): this }",
+      "signature": "class MockProvider { calls: {}; complete(req: LlmRequest): Promise<string>; name: \"mock\"; reply(text: string): this }",
       "file": "src/llm/mock.ts",
       "confidence": 1
     },

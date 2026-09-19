@@ -1,15 +1,15 @@
 {
   "version": 1,
   "toolVersion": "0.1.0",
-  "lastSha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+  "lastSha": "f1ea021a81729f4a750c9876ff86d47739444afe",
   "sections": {
     "structure": {
-      "inputHash": "5ba48b367a22",
-      "bodyHash": "bc1a5ef4bca0"
+      "inputHash": "2294b416d1cf",
+      "bodyHash": "b33d47bda512"
     },
     "api": {
-      "inputHash": "89230bad58e1",
-      "bodyHash": "386559256604"
+      "inputHash": "2ceca211404b",
+      "bodyHash": "169ae0834718"
     },
     "commands": {
       "inputHash": "c61610dc9704",
@@ -20,12 +20,30 @@
       "bodyHash": "73abf80fbc5c"
     },
     "changelog": {
-      "inputHash": "0104f521b5b0",
-      "bodyHash": "5dea217f09fa"
+      "inputHash": "83b0be6cadff",
+      "bodyHash": "7674fbe3212d"
     }
   },
   "changelog": {
     "entries": [
+      {
+        "sha": "40f46228dceb563076996b8a5a0e5d1c7dd07167",
+        "type": "m7",
+        "breaking": false,
+        "subject": "dogfood readme-sync on itself, docs, CI"
+      },
+      {
+        "sha": "1d33fb1bfde28080b511d5077f0f59963f4e5f61",
+        "type": "other",
+        "breaking": false,
+        "subject": "Add files via upload"
+      },
+      {
+        "sha": "5f40bbb08827f3ec9a9b8960b26df440cc7c80f4",
+        "type": "other",
+        "breaking": false,
+        "subject": "Add technical specs for the README sync engine"
+      },
       {
         "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
         "type": "m6",
@@ -76,6 +94,22 @@
       }
     ],
     "apiChanges": [
+      {
+        "sha": "f1ea021a81729f4a750c9876ff86d47739444afe",
+        "kind": "changed",
+        "category": "export",
+        "name": "configSchema",
+        "signature": "const configSchema: any",
+        "previous": "const configSchema: z.ZodObject<{ version: z.ZodDefault<z.ZodLiteral<1>>; packages: z.ZodDefault<z.ZodArray<z.ZodObject<{ path: z.ZodDefault<z.ZodString>; readme: z.ZodDefault<z.ZodString>; sections: z.ZodDefault<z.ZodObject<{ structure: z…"
+      },
+      {
+        "sha": "f1ea021a81729f4a750c9876ff86d47739444afe",
+        "kind": "changed",
+        "category": "export",
+        "name": "MockProvider",
+        "signature": "class MockProvider { calls: {}; complete(req: LlmRequest): Promise<string>; name: \"mock\"; reply(text: string): this }",
+        "previous": "class MockProvider { calls: LlmRequest[]; complete(req: LlmRequest): Promise<string>; name: \"mock\"; reply(text: string): this }"
+      },
       {
         "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
         "kind": "changed",
@@ -299,22 +333,6 @@
         "name": "spliceMany",
         "signature": "spliceMany(source: string, updates: Array<{ region: MarkerRegion; body: string; }>): string",
         "previous": "spliceMany(source: any, updates: any): any"
-      },
-      {
-        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
-        "kind": "changed",
-        "category": "export",
-        "name": "spliceRegion",
-        "signature": "spliceRegion(source: string, region: MarkerRegion, newBody: string): string",
-        "previous": "spliceRegion(source: any, region: any, newBody: any): string"
-      },
-      {
-        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
-        "kind": "changed",
-        "category": "export",
-        "name": "StaleFlag",
-        "signature": "interface StaleFlag { pkg: string; section?: SectionId; reason: FlagReason; message: string; files: string[]; }",
-        "previous": "interface StaleFlag { /** Package path (\".\" for root). */ pkg: string; /** Section affected, or undefined when the flag is not attributable to one section. */ section?: SectionId; reason: FlagReason; message: string; /** Package-relative files that triggered the flag. */ files: string[]; }"
       }
     ]
   }
