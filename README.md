@@ -315,9 +315,11 @@ pnpm install
 
 ## Changelog
 
-<!-- autogen:start:changelog hash=7674fbe3212d -->
+<!-- autogen:start:changelog hash=34b01ba7f768 -->
 **Other**
 
+- run on Node 22; pnpm 11 requires Node >= 22.13 (`f2de21a`)
+- drop pnpm version pin; packageManager in package.json is the source of truth (`42c3d9f`)
 - dogfood readme-sync on itself, docs, CI (`40f4622`)
 - Add files via upload (`1d33fb1`)
 - Add technical specs for the README sync engine (`5f40bbb`)

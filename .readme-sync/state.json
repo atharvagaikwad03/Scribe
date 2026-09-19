@@ -1,7 +1,7 @@
 {
   "version": 1,
   "toolVersion": "0.1.0",
-  "lastSha": "f1ea021a81729f4a750c9876ff86d47739444afe",
+  "lastSha": "2dc834ec4f44f20368a0727e2ce967e46187093e",
   "sections": {
     "structure": {
       "inputHash": "2294b416d1cf",
@@ -20,12 +20,24 @@
       "bodyHash": "73abf80fbc5c"
     },
     "changelog": {
-      "inputHash": "83b0be6cadff",
-      "bodyHash": "7674fbe3212d"
+      "inputHash": "350415a9c7f2",
+      "bodyHash": "34b01ba7f768"
     }
   },
   "changelog": {
     "entries": [
+      {
+        "sha": "f2de21aafca21af0bee910481f98ef99d0ae6a46",
+        "type": "ci",
+        "breaking": false,
+        "subject": "run on Node 22; pnpm 11 requires Node >= 22.13"
+      },
+      {
+        "sha": "42c3d9f70bc318066f29716cea66dd98d1ea9a50",
+        "type": "ci",
+        "breaking": false,
+        "subject": "drop pnpm version pin; packageManager in package.json is the source of truth"
+      },
       {
         "sha": "40f46228dceb563076996b8a5a0e5d1c7dd07167",
         "type": "m7",
