@@ -130,3 +130,35 @@ treating it as absent would render "no dependencies" into the README, which
 is exactly the kind of confident wrong output the tool exists to avoid.
 Workspace discovery and entry-point detection swallow the same error because
 they are supplementary and the extractors already report it.
+
+## D-019: Monorepo root defaults
+
+For an auto-discovered workspace root we enable `packages`, `structure` and
+`changelog` and disable `api`, `commands` and `dependencies`. The root of a
+monorepo rarely has a public API of its own, and requiring markers for all
+six sections in the root README would make the first run a wall of
+"missing marker" flags. Listing `packages:` explicitly in the config
+restores full control.
+
+## D-020: Conflicts are never resolved, only retried
+
+`commitAndPush` regenerates, commits, `pull --rebase`s and pushes. On any
+rebase conflict or rejected push it aborts, `reset --hard`s to the remote
+branch, regenerates on the new HEAD and tries again (3 attempts). Because
+generation is deterministic and the README is a function of HEAD, the second
+run naturally produces the merged result. Resolving conflicts textually
+would be both harder and less correct.
+
+## D-021: The Action is a single minified ESM bundle with a `require` shim
+
+`dist/action/index.js` bundles everything (including the TypeScript compiler)
+so the runner needs no `pnpm install`. The GitHub toolkit packages are CJS
+and call `require()` at runtime, so the bundle carries a `createRequire`
+banner. Minification keeps the committed artifact around 5 MB.
+
+## D-022: Pull requests always run in check mode
+
+Regenerating per feature branch is exactly the conflict source the spec
+warns about, so on `pull_request` events the Action only previews (diff +
+flags in one upserted comment) and never commits. Generation happens once,
+on push to the target branch, guarded by `concurrency` and the loop guard.

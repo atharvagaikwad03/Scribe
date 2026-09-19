@@ -8,11 +8,16 @@ export default defineConfig({
   target: 'node20',
   platform: 'node',
   sourcemap: false,
+  minify: true,
   clean: false,
   dts: false,
   splitting: false,
   shims: true,
   noExternal: [/.*/],
+  // CJS dependencies (@actions/*) call require() at runtime; provide one in the ESM bundle.
+  banner: {
+    js: "import { createRequire as __createRequire } from 'node:module'; const require = __createRequire(import.meta.url);",
+  },
   // `typescript` is large; keep it external-free by bundling, but mark the
   // dynamic requires it performs as safe to ignore.
   esbuildOptions(options) {

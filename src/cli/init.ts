@@ -1,6 +1,12 @@
 import path from 'node:path';
 import { createTwoFilesPatch } from 'diff';
-import { CONFIG_FILENAME, type Config, type SectionId, SECTION_IDS } from '../config/schema.js';
+import {
+  CONFIG_FILENAME,
+  DEFAULT_ANCHORS,
+  type Config,
+  type SectionId,
+  SECTION_IDS,
+} from '../config/schema.js';
 import { loadConfig, renderDefaultConfig } from '../config/load.js';
 import { resolvePackages, type ResolvedPackage } from '../config/packages.js';
 import {
@@ -109,11 +115,7 @@ export function insertMarkers(
       skipped.push({ id, why: 'marker already present' });
       continue;
     }
-    const anchor = cfg.anchor;
-    if (!anchor) {
-      skipped.push({ id, why: 'no anchor configured' });
-      continue;
-    }
+    const anchor = cfg.anchor ?? DEFAULT_ANCHORS[id];
     const heading = findHeading(parsed, anchor);
     if (heading) {
       const contentEnd = headingContentEnd(parsed, heading);

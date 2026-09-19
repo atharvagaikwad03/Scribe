@@ -240,10 +240,11 @@ export class Git {
   async push(
     remote = 'origin',
     branch?: string,
-    opts: { setUpstream?: boolean } = {},
+    opts: { setUpstream?: boolean; force?: boolean } = {},
   ): Promise<{ ok: boolean; message: string }> {
     const args = ['push', '-q'];
     if (opts.setUpstream) args.push('-u');
+    if (opts.force) args.push('--force-with-lease');
     args.push(remote);
     if (branch) args.push(`HEAD:${branch}`);
     const r = await this.git(args, { allowFailure: true });

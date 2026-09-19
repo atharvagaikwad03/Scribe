@@ -105,6 +105,16 @@ export const configSchema = z
 export type Config = z.infer<typeof configSchema>;
 export type ConfigInput = z.input<typeof configSchema>;
 
+/** Headings `init` uses when a section has no `anchor` configured. */
+export const DEFAULT_ANCHORS: Record<SectionId, string> = {
+  structure: '## Project structure',
+  api: '## API',
+  commands: '## Commands',
+  dependencies: '## Dependencies',
+  changelog: '## Changelog',
+  packages: '## Packages',
+};
+
 export const CONFIG_FILENAME = '.readme-sync.yml';
 export const STATE_DIR = '.readme-sync';
 export const COMMENT_MARKER = '<!-- readme-sync:comment -->';

@@ -148,13 +148,17 @@ export async function resolvePackages(
       }),
     ];
   }
+  // Root of an auto-discovered monorepo: it owns the packages table, structure and changelog.
+  // Per-package sections (api / commands / dependencies) are off unless `packages:` is configured
+  // explicitly, because the root usually has no public API of its own (D-019).
   const root = resolvePackage(repoRoot, config, {
     path: '.',
     readme: 'README.md',
-    // Root of a monorepo: no API/commands of its own by default, but a packages table.
     sections: {
-      packages: { enabled: config.sections.packages.enabled || true },
+      packages: { enabled: true },
       api: { enabled: false },
+      commands: { enabled: false },
+      dependencies: { enabled: false },
     },
     ignore: [],
   });

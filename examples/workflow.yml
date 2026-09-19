@@ -1,0 +1,61 @@
+# Example workflow for readme-sync.
+#
+# - On pull requests: check mode. Posts/updates one PR comment with the README
+#   diff preview and any "README may be stale" flags. Commits nothing.
+# - On push to the default branch (post-merge): regenerates affected sections
+#   and commits them back. Runs once per merge, never per feature branch.
+#
+# Loop guard layers:
+#   (a) our commit message carries `[skip ci]` and a `readme-sync: auto` trailer
+#   (b) the action exits early if HEAD carries the trailer or the actor is a bot
+#   (c) the action exits early if HEAD touches only README(s) and .readme-sync/**
+#   (d) identical output -> no commit
+#   (e) `paths-ignore` below
+# Note: pushes made with GITHUB_TOKEN do not trigger workflows at all; if you
+# use a PAT (e.g. to bypass branch protection) the guards above still apply.
+name: readme-sync
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
+      - '.readme-sync/**'
+
+# One run per ref at a time; queued runs are not cancelled so a merge is never skipped.
+concurrency:
+  group: readme-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # commit mode
+  pull-requests: write # PR comment / pr mode
+
+jobs:
+  readme-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # incremental diffs need the last-run commit
+          # For protected branches use a PAT or a GitHub App token here and set mode: pr.
+          token: ${{ github.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # If your project is Python, python3 >= 3.9 is needed for API surface extraction:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: readme-sync
+        uses: atharvagaikwad03/ubiquitous-tribble@main
+        with:
+          mode: commit # or: pr
+          # llm: anthropic
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
