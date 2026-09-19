@@ -24,15 +24,15 @@
     "schema"
   ],
   "scripts": {
-    "build": "tsup",
-    "build:action": "tsup --config tsup.action.config.ts",
+    "build": "tsup && tsup --config tsup.action.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "schema": "node ./scripts/gen-schema.mjs",
-    "readme-sync": "node ./dist/cli/index.js"
+    "readme-sync": "node ./dist/cli/index.js",
+    "check": "pnpm build && pnpm test && pnpm lint"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",

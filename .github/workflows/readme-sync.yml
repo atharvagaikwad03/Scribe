@@ -1,0 +1,37 @@
+# readme-sync running on its own repository (dogfood).
+# PRs: preview + stale flags as a comment. Push to main: regenerate and commit.
+name: readme-sync
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'README.md'
+      - '.readme-sync/**'
+
+concurrency:
+  group: readme-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  readme-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Uses the Action from this checkout (dist/action/index.js is committed).
+      - uses: ./
+        with:
+          mode: commit

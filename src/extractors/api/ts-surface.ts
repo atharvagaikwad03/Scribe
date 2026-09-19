@@ -19,7 +19,7 @@ async function toSourceCandidates(dir: string, declared: string): Promise<string
   const clean = declared.replace(/^\.\//, '');
   const noExt = clean.replace(/\.(d\.ts|js|mjs|cjs|ts|tsx|jsx|mts|cts)$/, '');
   const bases = new Set<string>([noExt]);
-  for (const out of ['dist', 'lib', 'build', 'out', 'esm', 'cjs']) {
+  for (const out of OUTPUT_DIRS) {
     if (noExt.startsWith(out + '/')) {
       bases.add('src/' + noExt.slice(out.length + 1));
       bases.add(noExt.slice(out.length + 1));
@@ -36,8 +36,13 @@ async function toSourceCandidates(dir: string, declared: string): Promise<string
       if (await exists(path.join(dir, p))) found.push(p);
     }
   }
-  return found;
+  // When a source twin exists, ignore the built output (types would all be `any`).
+  const isOutput = (p: string) => OUTPUT_DIRS.some((d) => p.startsWith(d + '/'));
+  const sources = found.filter((p) => !isOutput(p));
+  return sources.length ? sources : found;
 }
+
+const OUTPUT_DIRS = ['dist', 'lib', 'build', 'out', 'esm', 'cjs'];
 
 function collectExportTargets(exp: unknown, out: string[]): void {
   if (typeof exp === 'string') out.push(exp);
@@ -163,8 +168,9 @@ function oneLine(s: string, max = 240): string {
 }
 
 function declText(decl: ts.Node): string {
-  // Strip leading `export`/`declare`/`default` keywords and any body.
+  // Strip comments and leading `export`/`declare`/`default` keywords.
   let text = decl.getText();
+  text = text.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|\s)\/\/[^\n]*/g, ' ');
   text = text.replace(/^\s*export\s+(default\s+)?(declare\s+)?/, '');
   return text;
 }

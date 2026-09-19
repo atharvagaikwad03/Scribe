@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, atharva]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - name: Action bundle is up to date
+        run: git diff --exit-code -- dist/action/index.js || (echo "::error::dist/action/index.js is stale; run pnpm build and commit" && exit 1)
+      # The changelog section is always one commit behind by construction (it is regenerated
+      # post-merge by the readme-sync workflow), so the CI check covers the other sections.
+      - name: README is in sync (readme-sync --check on itself)
+        run: node dist/cli/index.js update --check --diff --section structure api commands dependencies

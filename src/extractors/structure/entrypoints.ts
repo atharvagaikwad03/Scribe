@@ -28,7 +28,7 @@ function collectExports(exp: unknown, subpath: string, out: EntryPoint[]): void 
   if (exp && typeof exp === 'object') {
     for (const [key, value] of Object.entries(exp as Record<string, unknown>)) {
       if (key.startsWith('.')) collectExports(value, key, out);
-      else collectExports(value, subpath, out); // condition (import/require/types/default)
+      else if (key !== 'types') collectExports(value, subpath, out); // condition (import/require/default)
     }
   }
 }

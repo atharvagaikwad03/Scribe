@@ -9,7 +9,7 @@ export default defineConfig({
   target: 'node20',
   platform: 'node',
   sourcemap: true,
-  clean: true,
+  clean: false, // dist/action is committed and built separately; never wipe it
   dts: { entry: { index: 'src/index.ts' } },
   splitting: false,
   shims: true,

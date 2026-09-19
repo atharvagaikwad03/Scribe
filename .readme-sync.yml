@@ -1,0 +1,26 @@
+# readme-sync configuration for readme-sync itself (dogfooding).
+# yaml-language-server: $schema=./schema/readme-sync.schema.json
+version: 1
+sections:
+  structure:
+    anchor: '## Project structure'
+    depth: 2
+  api:
+    anchor: '## API'
+  commands:
+    anchor: '## Commands'
+  dependencies:
+    anchor: '## Dependencies'
+  changelog:
+    anchor: '## Changelog'
+  packages:
+    enabled: false
+ignore:
+  - 'test/fixtures/**'
+  - 'docs/**'
+confidenceThreshold: 0.7
+failOnStale: false
+changelog:
+  maxEntries: 30
+llm:
+  enabled: false

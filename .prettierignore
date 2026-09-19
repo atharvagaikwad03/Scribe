@@ -6,3 +6,4 @@ coverage
 test/fixtures
 CHANGELOG.md
 *.md
+schema/

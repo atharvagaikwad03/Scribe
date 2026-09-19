@@ -162,3 +162,11 @@ Regenerating per feature branch is exactly the conflict source the spec
 warns about, so on `pull_request` events the Action only previews (diff +
 flags in one upserted comment) and never commits. Generation happens once,
 on push to the target branch, guarded by `concurrency` and the loop guard.
+
+## D-023: CI's `--check` on this repo excludes the changelog
+
+`readme-sync update --check` fails when the README is stale. The changelog
+section is stale by construction on every new commit (it is regenerated
+post-merge by the readme-sync workflow), so the CI job checks only the
+structure, api, commands and dependencies sections. Those must always match
+HEAD, which is the useful guarantee.
