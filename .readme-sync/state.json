@@ -1,0 +1,321 @@
+{
+  "version": 1,
+  "toolVersion": "0.1.0",
+  "lastSha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+  "sections": {
+    "structure": {
+      "inputHash": "5ba48b367a22",
+      "bodyHash": "bc1a5ef4bca0"
+    },
+    "api": {
+      "inputHash": "89230bad58e1",
+      "bodyHash": "386559256604"
+    },
+    "commands": {
+      "inputHash": "c61610dc9704",
+      "bodyHash": "3826476a0e7d"
+    },
+    "dependencies": {
+      "inputHash": "03a9d5c93832",
+      "bodyHash": "73abf80fbc5c"
+    },
+    "changelog": {
+      "inputHash": "0104f521b5b0",
+      "bodyHash": "5dea217f09fa"
+    }
+  },
+  "changelog": {
+    "entries": [
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "type": "m6",
+        "breaking": false,
+        "subject": "GitHub Action, check|commit|pr modes, loop guard, rebase-retry, monorepo"
+      },
+      {
+        "sha": "7b09a525c83178db4c6a2a6052f6b9b6a852b332",
+        "type": "m5",
+        "breaking": false,
+        "subject": "fail-closed flag coverage, PR comment upsert, comment/explain hardening"
+      },
+      {
+        "sha": "7c472ccf0f42005f352e6b395a7fceab66695082",
+        "type": "m4",
+        "breaking": false,
+        "subject": "changelog extractor (deterministic + optional validated LLM)"
+      },
+      {
+        "sha": "0d3f6656131b689219fd0628ee223b8957fde52b",
+        "type": "m3",
+        "breaking": false,
+        "subject": "structure + api extractors with snapshot diffing"
+      },
+      {
+        "sha": "d8ce1bd9b8f3916eeb23231d69e7c15f6312f0e0",
+        "type": "m2",
+        "breaking": false,
+        "subject": "incremental engine, state, commands + dependencies extractors, CLI"
+      },
+      {
+        "sha": "07da88c87ea32beaa9e4bebd30a0ffe3fe7542aa",
+        "type": "m1",
+        "breaking": false,
+        "subject": "scaffold, config schema, marker parser and offset splicer"
+      },
+      {
+        "sha": "ce31c4e0e589ee2b7684c86a7952864083482550",
+        "type": "other",
+        "breaking": false,
+        "subject": "Write README describing the auto-README CI plugin"
+      },
+      {
+        "sha": "cc99bffeefdfd597ee1abb4c6e2a74a34427cfa8",
+        "type": "other",
+        "breaking": false,
+        "subject": "Initial commit"
+      }
+    ],
+    "apiChanges": [
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "AnthropicProvider",
+        "signature": "class AnthropicProvider(apiKey: string, baseUrl?) { complete(req: LlmRequest): Promise<string>; name: \"anthropic\" }",
+        "previous": "const AnthropicProvider: typeof AnthropicProvider"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "apply",
+        "signature": "apply(run: RunPlan): Promise<ApplyResult>",
+        "previous": "apply(run2: any): Promise<{ written: any[]; }>"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "bodyHash",
+        "signature": "bodyHash(body: string): string",
+        "previous": "bodyHash(body: any): string"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "buildCommentBody",
+        "signature": "buildCommentBody(run: RunPlan, opts?: { readmeDiff?: string; runUrl?: string; }): string",
+        "previous": "buildCommentBody(run2: any, opts?: {}): string"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "COMMENT_MARKER",
+        "signature": "const COMMENT_MARKER: \"<!-- readme-sync:comment -->\"",
+        "previous": "const COMMENT_MARKER: any"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "CONFIG_FILENAME",
+        "signature": "const CONFIG_FILENAME: \".readme-sync.yml\"",
+        "previous": "const CONFIG_FILENAME: any"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "configSchema",
+        "signature": "const configSchema: z.ZodObject<{ version: z.ZodDefault<z.ZodLiteral<1>>; packages: z.ZodDefault<z.ZodArray<z.ZodObject<{ path: z.ZodDefault<z.ZodString>; readme: z.ZodDefault<z.ZodString>; sections: z.ZodDefault<z.ZodObject<{ structure: z…",
+        "previous": "const configSchema: any"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "createLlmProvider",
+        "signature": "createLlmProvider(config: Config, override?: string): LlmProvider | undefined",
+        "previous": "createLlmProvider(config: any, override: any): AnthropicProvider | MockProvider | undefined"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "formatFlag",
+        "signature": "formatFlag(f: StaleFlag): string",
+        "previous": "formatFlag(f: any): string"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "Git",
+        "signature": "class Git(cwd: string) { add(paths: string[]): Promise<void>; changedFiles(base: string, head?: string): Promise<ChangedFile[]>; commit(message: string, opts?: { authorName?: string; authorEmail?: string; }): Promise<string>; commitAuthor(rev?: string): Promise<{ name: string; email: string; }>; commitExists(sha: string): Promise<boolean>; commitMessage(rev?: string): Promise<string>; commitsBetw…",
+        "previous": "const Git: typeof Git"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "init",
+        "signature": "init(opts: InitOptions): Promise<InitResult>",
+        "previous": "init(opts: any): Promise<{ wroteConfig: boolean; readmes: never[]; }>"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "insertMarkers",
+        "signature": "insertMarkers(source: string, pkg: ResolvedPackage, adopt: boolean): { after: string; inserted: SectionId[]; adopted: SectionId[]; skipped: Array<{ id: SectionId; why: string; }>; }",
+        "previous": "insertMarkers(source: any, pkg: any, adopt: any): { after: any; inserted: string[]; adopted: string[]; skipped: { id: string; why: any; }[]; }"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "loadConfig",
+        "signature": "loadConfig(repoRoot: string, configPath?: string): Promise<LoadedConfig>",
+        "previous": "loadConfig(repoRoot: any, configPath: any): Promise<{ config: any; file: undefined; } | { config: any; file: string; }>"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "MarkerRegion",
+        "signature": "interface MarkerRegion { id: string; hash: string | undefined; start: number; end: number; bodyStart: number; bodyEnd: number; body: string; attrs: Record<string, string>; }",
+        "previous": "interface MarkerRegion { id: string; /** Hash recorded in the start marker, if any. */ hash: string | undefined; /** Offset of the first char of the start marker. */ start: number; /** Offset just past the last char of the end marker. */ end: number; bodyStart: number; bodyEnd: number; /** Canonical body: the region text with one leading and trailing newline stripped. */ body: string; /** Extra a…"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "MockProvider",
+        "signature": "class MockProvider { calls: LlmRequest[]; complete(req: LlmRequest): Promise<string>; name: \"mock\"; reply(text: string): this }",
+        "previous": "const MockProvider: typeof MockProvider"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "PackagePlan",
+        "signature": "interface PackagePlan { pkg: ResolvedPackage; headSha: string; baseSha: string | null; fullMode: boolean; fullModeReason?: string; files: MappedFile[]; sections: SectionPlan[]; flags: StaleFlag[]; readmeBefore?: string; readmeAfter?: string; readmeChanged: boolean; stateBefore: PackageState; stateAfter: PackageState; error?: string; _contexts?: Map<SectionId, ExtractContext>; }",
+        "previous": "interface PackagePlan { pkg: ResolvedPackage; headSha: string; baseSha: string | null; fullMode: boolean; fullModeReason?: string; files: MappedFile[]; sections: SectionPlan[]; flags: StaleFlag[]; readmeBefore?: string; readmeAfter?: string; readmeChanged: boolean; stateBefore: PackageState; stateAfter: PackageState; /** Fatal package-level problem (e.g. malformed markers). Nothing is written for…"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "parseConfig",
+        "signature": "parseConfig(input: unknown, sourceName?: string): Config",
+        "previous": "parseConfig(input: any, sourceName?: any): any"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "parseReadme",
+        "signature": "parseReadme(source: string): ParsedReadme",
+        "previous": "parseReadme(source: any): { source: any; regions: { id: string | undefined; hash: any; attrs: {}; start: any; end: any; bodyStart: any; bodyEnd: any; body: any; }[]; headings: { depth: any; text: any; start: any; end: any; }[]; }"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "plan",
+        "signature": "plan(opts: RunOptions): Promise<RunPlan>",
+        "previous": "plan(opts: any): Promise<{ repoRoot: any; headSha: any; packages: { pkg: any; headSha: any; baseSha: null; fullMode: boolean; files: never[]; sections: any[]; flags: any[]; readmeChanged: boolean; stateBefore: any; stateAfter: any; }[]; fl…"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "planToJson",
+        "signature": "planToJson(run: RunPlan): unknown",
+        "previous": "planToJson(run2: any): { headSha: any; changed: any; packages: any; }"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "regionIsPristine",
+        "signature": "regionIsPristine(region: MarkerRegion): boolean",
+        "previous": "regionIsPristine(region: any): boolean"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "renderRegion",
+        "signature": "renderRegion(id: string, body: string, attrs?: Record<string, string>): string",
+        "previous": "renderRegion(id: any, body: any, attrs?: {}): string"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "ResolvedPackage",
+        "signature": "interface ResolvedPackage { path: string; slug: string; absPath: string; readme: string; absReadme: string; stateDir: string; sections: Record<SectionId, SectionConfig>; ignore: string[]; }",
+        "previous": "interface ResolvedPackage { /** Repo-relative POSIX path, \".\" for the root. */ path: string; /** Stable slug used for state directories. */ slug: string; absPath: string; /** Repo-relative POSIX path of the README. */ readme: string; absReadme: string; /** Repo-relative POSIX path of this package's state directory. */ stateDir: string; sections: Record<SectionId, SectionConfig>; /** Package-relat…"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "resolvePackages",
+        "signature": "resolvePackages(repoRoot: string, config: Config): Promise<ResolvedPackage[]>",
+        "previous": "resolvePackages(repoRoot: any, config: any): Promise<any>"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "RunOptions",
+        "signature": "interface RunOptions { repoRoot: string; config: Config; base?: string; force?: boolean; acceptStale?: boolean; packages?: string[]; sections?: SectionId[]; llm?: LlmProvider; includeWorkingTree?: boolean; forceExtract?: boolean; }",
+        "previous": "interface RunOptions { repoRoot: string; config: Config; /** Override the base commit (defaults to the package's recorded lastSha). */ base?: string; /** Overwrite sections that were manually edited inside their markers. */ force?: boolean; /** Advance lastSha even when stale flags were raised. */ acceptStale?: boolean; /** Only process packages whose path is in this list. */ packages?: string[];…"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "RunPlan",
+        "signature": "interface RunPlan { repoRoot: string; headSha: string; packages: PackagePlan[]; flags: StaleFlag[]; changed: boolean; }",
+        "previous": "interface RunPlan { repoRoot: string; headSha: string; packages: PackagePlan[]; flags: StaleFlag[]; /** True when at least one README would change. */ changed: boolean; }"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "SectionPlan",
+        "signature": "interface SectionPlan { id: SectionId; status: SectionStatus; reason: string; affectedBy: string[]; confidence?: number; diagnostics: string[]; oldBody?: string; newBody?: string; inputHash?: string; data?: unknown; extracted: boolean; }",
+        "previous": "interface SectionPlan { id: SectionId; status: SectionStatus; reason: string; /** Package-relative files that made this section run. */ affectedBy: string[]; confidence?: number; diagnostics: string[]; oldBody?: string; newBody?: string; inputHash?: string; data?: unknown; /** Set when extraction succeeded (used for afterWrite hooks). */ extracted: boolean; }"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "spliceMany",
+        "signature": "spliceMany(source: string, updates: Array<{ region: MarkerRegion; body: string; }>): string",
+        "previous": "spliceMany(source: any, updates: any): any"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "spliceRegion",
+        "signature": "spliceRegion(source: string, region: MarkerRegion, newBody: string): string",
+        "previous": "spliceRegion(source: any, region: any, newBody: any): string"
+      },
+      {
+        "sha": "10c58db8d6595f570fab00aafa25cf773189ad96",
+        "kind": "changed",
+        "category": "export",
+        "name": "StaleFlag",
+        "signature": "interface StaleFlag { pkg: string; section?: SectionId; reason: FlagReason; message: string; files: string[]; }",
+        "previous": "interface StaleFlag { /** Package path (\".\" for root). */ pkg: string; /** Section affected, or undefined when the flag is not attributable to one section. */ section?: SectionId; reason: FlagReason; message: string; /** Package-relative files that triggered the flag. */ files: string[]; }"
+      }
+    ]
+  }
+}

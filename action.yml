@@ -1,0 +1,56 @@
+name: readme-sync
+description: Keep README.md in sync with the codebase by surgically patching tool-owned sections. Fails closed instead of guessing.
+author: readme-sync contributors
+branding:
+  icon: refresh-cw
+  color: blue
+
+inputs:
+  mode:
+    description: >-
+      What to do on push events: `check` (never write), `commit` (commit and push to the branch),
+      or `pr` (push to a branch and open/update a pull request). Pull request events always run in `check` mode.
+    required: false
+    default: commit
+  config:
+    description: Path to the config file, relative to the repository root.
+    required: false
+    default: .readme-sync.yml
+  token:
+    description: >-
+      Token used to post the PR comment and (in `pr` mode) open the pull request. `GITHUB_TOKEN` pushes do not
+      re-trigger workflows; a PAT does, so keep the loop guard in place if you use one.
+    required: false
+    default: ${{ github.token }}
+  llm:
+    description: >-
+      LLM usage for changelog highlights: `off`, `anthropic` (needs ANTHROPIC_API_KEY) or `mock`. Overrides config.
+    required: false
+  commit-message:
+    description: >-
+      Commit message for `commit` / `pr` mode. The `readme-sync: auto` trailer is appended automatically.
+    required: false
+    default: 'docs: sync README with codebase [skip ci]'
+  pr-branch:
+    description: Branch used in `pr` mode.
+    required: false
+    default: readme-sync/update
+  working-directory:
+    description: Directory inside the checkout to run from (defaults to the repository root).
+    required: false
+
+outputs:
+  changed:
+    description: '"true" when a README was (or would be) changed.'
+  flags:
+    description: Number of stale flags raised.
+  skipped:
+    description: '"true" when the loop guard skipped the run.'
+  sha:
+    description: Commit SHA created in `commit` / `pr` mode, if any.
+  plan:
+    description: JSON plan (check mode).
+
+runs:
+  using: node20
+  main: dist/action/index.js

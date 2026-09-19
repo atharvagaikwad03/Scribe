@@ -1,0 +1,392 @@
+{
+  "version": 1,
+  "language": [
+    "typescript"
+  ],
+  "items": [
+    {
+      "category": "cli",
+      "kind": "command",
+      "name": "comment",
+      "signature": "comment",
+      "file": "src/cli/index.ts",
+      "confidence": 0.85
+    },
+    {
+      "category": "cli",
+      "kind": "command",
+      "name": "explain",
+      "signature": "explain <section>",
+      "file": "src/cli/index.ts",
+      "confidence": 0.85
+    },
+    {
+      "category": "cli",
+      "kind": "command",
+      "name": "init",
+      "signature": "init",
+      "file": "src/cli/index.ts",
+      "confidence": 0.85
+    },
+    {
+      "category": "cli",
+      "kind": "command",
+      "name": "plan",
+      "signature": "plan",
+      "file": "src/cli/index.ts",
+      "confidence": 0.85
+    },
+    {
+      "category": "cli",
+      "kind": "binary",
+      "name": "readme-sync",
+      "signature": "readme-sync (dist/cli/index.js)",
+      "file": "package.json",
+      "confidence": 1
+    },
+    {
+      "category": "cli",
+      "kind": "command",
+      "name": "update",
+      "signature": "update",
+      "file": "src/cli/index.ts",
+      "confidence": 0.85
+    },
+    {
+      "category": "export",
+      "kind": "class",
+      "name": "AnthropicProvider",
+      "signature": "class AnthropicProvider(apiKey: string, baseUrl?) { complete(req: LlmRequest): Promise<string>; name: \"anthropic\" }",
+      "file": "src/llm/anthropic.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "apply",
+      "signature": "apply(run: RunPlan): Promise<ApplyResult>",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "bodyHash",
+      "signature": "bodyHash(body: string): string",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "buildCommentBody",
+      "signature": "buildCommentBody(run: RunPlan, opts?: { readmeDiff?: string; runUrl?: string; }): string",
+      "file": "src/github/comment.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "const",
+      "name": "COMMENT_MARKER",
+      "signature": "const COMMENT_MARKER: \"<!-- readme-sync:comment -->\"",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "type",
+      "name": "Config",
+      "signature": "type Config = z.infer<typeof configSchema>;",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "const",
+      "name": "CONFIG_FILENAME",
+      "signature": "const CONFIG_FILENAME: \".readme-sync.yml\"",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "const",
+      "name": "configSchema",
+      "signature": "const configSchema: z.ZodObject<{ version: z.ZodDefault<z.ZodLiteral<1>>; packages: z.ZodDefault<z.ZodArray<z.ZodObject<{ path: z.ZodDefault<z.ZodString>; readme: z.ZodDefault<z.ZodString>; sections: z.ZodDefault<z.ZodObject<{ structure: z…",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "createLlmProvider",
+      "signature": "createLlmProvider(config: Config, override?: string): LlmProvider | undefined",
+      "file": "src/llm/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "type",
+      "name": "FlagReason",
+      "signature": "type FlagReason = | 'unmapped-surface-file' | 'low-confidence' | 'extractor-error' | 'manual-edit' | 'malformed-markers' | 'missing-marker' | 'render-error';",
+      "file": "src/flags/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "formatFlag",
+      "signature": "formatFlag(f: StaleFlag): string",
+      "file": "src/flags/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "class",
+      "name": "Git",
+      "signature": "class Git(cwd: string) { add(paths: string[]): Promise<void>; changedFiles(base: string, head?: string): Promise<ChangedFile[]>; commit(message: string, opts?: { authorName?: string; authorEmail?: string; }): Promise<string>; commitAuthor(rev?: string): Promise<{ name: string; email: string; }>; commitExists(sha: string): Promise<boolean>; commitMessage(rev?: string): Promise<string>; commitsBetw…",
+      "file": "src/git/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "init",
+      "signature": "init(opts: InitOptions): Promise<InitResult>",
+      "file": "src/cli/init.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "insertMarkers",
+      "signature": "insertMarkers(source: string, pkg: ResolvedPackage, adopt: boolean): { after: string; inserted: SectionId[]; adopted: SectionId[]; skipped: Array<{ id: SectionId; why: string; }>; }",
+      "file": "src/cli/init.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "LlmProvider",
+      "signature": "interface LlmProvider { readonly name: string; complete(req: LlmRequest): Promise<string>; }",
+      "file": "src/llm/provider.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "loadConfig",
+      "signature": "loadConfig(repoRoot: string, configPath?: string): Promise<LoadedConfig>",
+      "file": "src/config/load.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "MarkerRegion",
+      "signature": "interface MarkerRegion { id: string; hash: string | undefined; start: number; end: number; bodyStart: number; bodyEnd: number; body: string; attrs: Record<string, string>; }",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "class",
+      "name": "MockProvider",
+      "signature": "class MockProvider { calls: LlmRequest[]; complete(req: LlmRequest): Promise<string>; name: \"mock\"; reply(text: string): this }",
+      "file": "src/llm/mock.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "type",
+      "name": "PackageConfig",
+      "signature": "type PackageConfig = z.infer<typeof packageConfigSchema>;",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "PackagePlan",
+      "signature": "interface PackagePlan { pkg: ResolvedPackage; headSha: string; baseSha: string | null; fullMode: boolean; fullModeReason?: string; files: MappedFile[]; sections: SectionPlan[]; flags: StaleFlag[]; readmeBefore?: string; readmeAfter?: string; readmeChanged: boolean; stateBefore: PackageState; stateAfter: PackageState; error?: string; _contexts?: Map<SectionId, ExtractContext>; }",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "parseConfig",
+      "signature": "parseConfig(input: unknown, sourceName?: string): Config",
+      "file": "src/config/load.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "ParsedReadme",
+      "signature": "interface ParsedReadme { source: string; regions: MarkerRegion[]; headings: HeadingAnchor[]; }",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "parseReadme",
+      "signature": "parseReadme(source: string): ParsedReadme",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "plan",
+      "signature": "plan(opts: RunOptions): Promise<RunPlan>",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "planToJson",
+      "signature": "planToJson(run: RunPlan): unknown",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "regionIsPristine",
+      "signature": "regionIsPristine(region: MarkerRegion): boolean",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "renderDefaultConfig",
+      "signature": "renderDefaultConfig(): string",
+      "file": "src/config/load.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "renderRegion",
+      "signature": "renderRegion(id: string, body: string, attrs?: Record<string, string>): string",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "ResolvedPackage",
+      "signature": "interface ResolvedPackage { path: string; slug: string; absPath: string; readme: string; absReadme: string; stateDir: string; sections: Record<SectionId, SectionConfig>; ignore: string[]; }",
+      "file": "src/config/packages.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "resolvePackages",
+      "signature": "resolvePackages(repoRoot: string, config: Config): Promise<ResolvedPackage[]>",
+      "file": "src/config/packages.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "RunOptions",
+      "signature": "interface RunOptions { repoRoot: string; config: Config; base?: string; force?: boolean; acceptStale?: boolean; packages?: string[]; sections?: SectionId[]; llm?: LlmProvider; includeWorkingTree?: boolean; forceExtract?: boolean; }",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "RunPlan",
+      "signature": "interface RunPlan { repoRoot: string; headSha: string; packages: PackagePlan[]; flags: StaleFlag[]; changed: boolean; }",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "type",
+      "name": "SectionConfig",
+      "signature": "type SectionConfig = z.infer<typeof sectionConfigSchema>;",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "type",
+      "name": "SectionId",
+      "signature": "type SectionId = (typeof SECTION_IDS)[number];",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "SectionPlan",
+      "signature": "interface SectionPlan { id: SectionId; status: SectionStatus; reason: string; affectedBy: string[]; confidence?: number; diagnostics: string[]; oldBody?: string; newBody?: string; inputHash?: string; data?: unknown; extracted: boolean; }",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "type",
+      "name": "SectionStatus",
+      "signature": "type SectionStatus = 'disabled' | 'unchanged' | 'update' | 'flagged' | 'skipped';",
+      "file": "src/engine/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "spliceMany",
+      "signature": "spliceMany(source: string, updates: Array<{ region: MarkerRegion; body: string; }>): string",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "spliceRegion",
+      "signature": "spliceRegion(source: string, region: MarkerRegion, newBody: string): string",
+      "file": "src/markdown/markers.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "interface",
+      "name": "StaleFlag",
+      "signature": "interface StaleFlag { pkg: string; section?: SectionId; reason: FlagReason; message: string; files: string[]; }",
+      "file": "src/flags/index.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "const",
+      "name": "STATE_DIR",
+      "signature": "const STATE_DIR: \".readme-sync\"",
+      "file": "src/config/schema.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "const",
+      "name": "TOOL_VERSION",
+      "signature": "const TOOL_VERSION: string",
+      "file": "src/version.ts",
+      "confidence": 1
+    },
+    {
+      "category": "export",
+      "kind": "function",
+      "name": "upsertComment",
+      "signature": "upsertComment(ctx: PullRequestContext, body: string, client?: CommentClient): Promise<{ action: \"created\" | \"updated\" | \"unchanged\"; url: string; }>",
+      "file": "src/github/comment.ts",
+      "confidence": 1
+    }
+  ]
+}
