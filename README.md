@@ -9,6 +9,24 @@
 
 > This README is maintained by `readme-sync` itself. Everything between `<!-- autogen:start:… -->` and `<!-- autogen:end:… -->` markers is generated on every push to `main`. Everything else was written by a person and is never touched by the tool.
 
+## Contents
+
+- [Why surgical beats regeneration](#why-surgical-beats-regeneration)
+- [How it works](#how-it-works)
+- [Requirements](#requirements)
+- [Quick start](#quick-start)
+- [GitHub Action](#github-action)
+- [CLI](#cli)
+- [Generated sections](#generated-sections)
+- [Stale flags](#stale-flags)
+- [Configuration](#configuration)
+- [Monorepos](#monorepos)
+- Generated on every push: [Project structure](#project-structure) · [API](#api) · [Commands](#commands) · [Dependencies](#dependencies) · [Changelog](#changelog)
+- [Development](#development)
+- [Design notes](#design-notes)
+- [Non-goals (for now)](#non-goals-for-now)
+- [License](#license)
+
 ## Why surgical beats regeneration
 
 Most README generators do a one-shot rewrite from an LLM prompt. That has three problems that get worse the longer you use them:
@@ -60,18 +78,120 @@ Each generated region carries the hash of the body the tool last wrote:
 
 If a human edits inside the markers, the hash no longer matches and the tool **does not overwrite** the edit. It flags it, and `--force` reclaims the section.
 
+The README is parsed only to *locate* markers and headings. It is never re-serialised from a syntax tree, so list styles, table alignment, trailing whitespace and every other byte outside the markers survive untouched. After each splice the result is re-parsed and must contain the same markers in the same order, or the write is refused.
+
+## Requirements
+
+- **Node.js 20 or newer** and **git**. The tool shells out to `git` for the diff, so it needs a checkout with history. In CI use `fetch-depth: 0`; a shallow clone still works but falls back to a full regeneration of the generated sections.
+- **Python 3.9 or newer** on `PATH`, only if you want the API surface of a Python project. Set `READMESYNC_PYTHON` to point at a specific interpreter. Without Python the `api` section still runs; it just reports that the Python surface could not be extracted.
+- **Nothing else.** No API keys and no network access, unless you opt in to LLM changelog highlights.
+
 ## Quick start
 
+`readme-sync` is not published to npm yet (the `readme-sync` name on npm belongs to an unrelated tool). Until it is, run it from a clone or use the GitHub Action, which needs no install.
+
 ```sh
-pnpm add -D readme-sync        # or npm / yarn
-npx readme-sync init           # writes .readme-sync.yml, inserts markers at your headings
-npx readme-sync plan           # dry run: what would change, what is flagged, and why
-npx readme-sync update         # write the generated sections + .readme-sync/state.json
+git clone https://github.com/atharvagaikwad03/ubiquitous-tribble readme-sync
+cd readme-sync && pnpm install && pnpm build
+cd /path/to/your/project
+node /path/to/readme-sync/dist/cli/index.js init     # writes .readme-sync.yml, inserts markers at your headings
+node /path/to/readme-sync/dist/cli/index.js plan     # dry run: what would change, what is flagged, and why
+node /path/to/readme-sync/dist/cli/index.js update   # write the generated sections + .readme-sync/state.json
 ```
 
-`init` never converts existing prose into a generated section unless you pass `--adopt`. Without it, an existing `## API` heading gets an empty marker pair below it and your notes stay where they were.
+`init` never converts existing prose into a generated section unless you pass `--adopt`. Without it, an existing `## API` heading gets an empty marker pair below it and your notes stay where they were. Re-running `init` is safe: sections that already have markers are skipped.
 
-Then add the workflow from [`examples/workflow.yml`](examples/workflow.yml). On pull requests it only comments; on push to `main` it commits the regenerated sections back.
+Commit the README and the `.readme-sync/` directory. The state file records the commit each section was last generated from, which is what makes later runs incremental.
+
+Then add the workflow below. On pull requests it only comments; on push to `main` it commits the regenerated sections back.
+
+## GitHub Action
+
+Minimal workflow (the full, annotated version is [`examples/workflow.yml`](examples/workflow.yml)):
+
+```yaml
+name: readme-sync
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore: ['README.md', '**/README.md', '.readme-sync/**']
+
+concurrency:
+  group: readme-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write        # commit mode
+  pull-requests: write   # PR comment / pr mode
+
+jobs:
+  readme-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # incremental diffs need the last-run commit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: atharvagaikwad03/ubiquitous-tribble@main
+        with:
+          mode: commit     # or: pr, check
+```
+
+### Inputs
+
+| Input | Default | Purpose |
+| --- | --- | --- |
+| `mode` | `commit` | On push: `check` (never write), `commit` (commit and push to the branch) or `pr` (push to `pr-branch` and open/update a pull request). Pull request events always run in `check` mode. |
+| `config` | `.readme-sync.yml` | Config path, relative to the repository root. |
+| `token` | `${{ github.token }}` | Used for the PR comment and, in `pr` mode, the pull request. Use a PAT or GitHub App token to push to a protected branch. |
+| `llm` | from config | `off`, `anthropic` (needs `ANTHROPIC_API_KEY`) or `mock`. Changelog highlights only. |
+| `commit-message` | `docs: sync README with codebase [skip ci]` | Commit message for `commit` / `pr` mode. The `readme-sync: auto` trailer is appended automatically. |
+| `pr-branch` | `readme-sync/update` | Branch used in `pr` mode. |
+| `working-directory` | repository root | Directory inside the checkout to run from. |
+
+### Outputs
+
+| Output | Meaning |
+| --- | --- |
+| `changed` | `"true"` when a README was (or would be) changed. |
+| `flags` | Number of stale flags raised. |
+| `skipped` | `"true"` when the loop guard skipped the run. |
+| `sha` | Commit created in `commit` / `pr` mode, if any. |
+| `plan` | The JSON plan (check mode). |
+
+### Behaviour in CI
+
+- **Pull requests** always run in `check` mode: no commits, one comment with the README diff preview and flags.
+- **Push to the default branch** runs in `commit` mode (or `pr` mode for protected branches) once per merge, never per feature branch. Regenerating on every feature branch is exactly what produces merge conflicts in generated sections.
+- **Loop guard**, in layers: `[skip ci]` and a `readme-sync: auto` trailer on the tool's commits; early exit when HEAD carries the trailer, was authored by the bot, or touches only README(s) and `.readme-sync/**`; no commit when output is identical; `paths-ignore` in the workflow. Pushes made with `GITHUB_TOKEN` do not trigger workflows at all; PATs do, so keep the guards if you use one.
+- **Conflicts**: the workflow uses `concurrency: readme-sync-${{ github.ref }}` and the Action does `pull --rebase` before pushing. On conflict it throws the local patch away, regenerates on the new HEAD (generation is deterministic) and retries, up to three times.
+- **Flags** go to one PR comment (upserted, never duplicated) and to the job summary. Set `failOnStale: true` in the config to fail the job instead of just reporting.
+
+## CLI
+
+Every command accepts `-C <dir>` to run from another directory, `-c <file>` to point at a config file, and `-v` / `-q` for more or less logging.
+
+| Command | What it does |
+| --- | --- |
+| `init [--adopt] [--dry-run]` | Create `.readme-sync.yml` and insert marker pairs under the configured anchor headings. `--adopt` moves the prose already under a heading into the generated section. |
+| `plan [--diff] [--json]` | Dry run. Prints, per section, whether it would be updated, left alone, skipped or flagged, and why. Never writes. |
+| `update [--check] [--diff]` | Regenerate affected sections and write the README(s) and state. `--check` writes nothing and exits 1 if the README is out of date, which is what CI should run. |
+| `explain <section>` | Show the changed files that were mapped to one section, the extractor output, its confidence and diagnostics, and the resulting diff. Start here when a flag surprises you. |
+| `comment [--dry-run]` | Upsert the stale-warning comment on the current pull request. The Action calls this for you; it is exposed for other CI systems. |
+
+Options shared by `plan`, `update`, `explain` and `comment`:
+
+| Option | Effect |
+| --- | --- |
+| `--base <sha>` | Diff against this commit instead of the recorded last run. |
+| `--section <id...>` | Only process these sections. The CI job on this repo uses it to skip the changelog, which is always one commit behind by construction. |
+| `--package <path...>` | Only process these package paths in a monorepo. |
+| `--force` | Overwrite sections that were edited by hand inside their markers. |
+| `--accept-stale` | Advance the recorded commit even though stale flags were raised. Use it once a human has dealt with the flagged change. |
+| `--llm off\|anthropic\|mock` | Override the config's LLM setting for changelog highlights. |
 
 ## Generated sections
 
@@ -84,27 +204,39 @@ Then add the workflow from [`examples/workflow.yml`](examples/workflow.yml). On 
 | `changelog` | every commit | Conventional Commits grouped as Breaking / Features / Fixes / Other, plus API changes from the surface diff. Append-only, SHA-deduped, capped |
 | `packages` | workspace manifests | monorepo root table of packages |
 
-## Fail closed
+Every section can be disabled, given a different anchor heading, or pointed at different files. See [Configuration](#configuration). The generated regions further down this page are what these extractors produce for `readme-sync` itself.
+
+## Stale flags
 
 A **stale flag** ("README may be stale here") is raised, and the affected section is left untouched, when:
 
-- an unmapped changed file is surface-relevant: a manifest, lockfile, Dockerfile, entry point, added/removed CI config, or a new top-level directory;
-- an extractor's confidence is below `confidenceThreshold`, or it throws (for example a `package.json` that is not valid JSON);
-- a generated section was edited by hand (marker hash mismatch);
-- markers are malformed, or an enabled section has no marker in the README.
+| Reason | Trigger |
+| --- | --- |
+| `unmapped-surface-file` | a changed file that no section watches is surface-relevant: a manifest, lockfile, `requirements*.txt`, Dockerfile or compose file, an entry point, an added or removed CI config, or a file in a new top-level directory |
+| `low-confidence` | an extractor's confidence is below `confidenceThreshold` |
+| `extractor-error` | an extractor throws, for example on a `package.json` that is not valid JSON |
+| `manual-edit` | a generated section was edited by hand (the marker hash no longer matches the body) |
+| `missing-marker` | a section is enabled but its markers are not in the README |
+| `malformed-markers` | a start marker without its end, or nested or duplicated markers |
+| `render-error` | the rendered body would break the marker structure |
 
-Flags go to one PR comment (upserted, never duplicated) and to the job summary. While any flag is open the recorded `lastSha` does not advance, so the unaccounted change keeps being reported until a human resolves it. Set `failOnStale: true` to fail the job instead.
+While any flag is open the recorded `lastSha` does not advance, so the unaccounted change keeps being reported on every run until a human resolves it. Nothing is ever written to work around a flag.
 
-## CI behaviour
+### Resolving a flag
 
-- **Pull requests** always run in `check` mode: no commits, one comment with the README diff preview and flags.
-- **Push to the default branch** runs in `commit` mode (or `pr` mode for protected branches) once per merge, never per feature branch.
-- **Loop guard**, in layers: `[skip ci]` and a `readme-sync: auto` trailer on the tool's commits; early exit when HEAD carries the trailer, was authored by the bot, or touches only README(s) and `.readme-sync/**`; no commit when output is identical; `paths-ignore` in the workflow. Pushes made with `GITHUB_TOKEN` do not trigger workflows at all; PATs do, so keep the guards if you use one.
-- **Conflicts**: the workflow uses `concurrency: readme-sync-${{ github.ref }}` and the Action does `pull --rebase` before pushing. On conflict it throws the local patch away, regenerates on the new HEAD (generation is deterministic) and retries, up to three times.
+1. Run `readme-sync explain <section>` (or `plan -v`) to see which files triggered it and what the extractor saw.
+2. Pick the fix that matches the cause:
+   - **The file should drive a section.** Add a glob to that section's `watchExtra` in `.readme-sync.yml`.
+   - **The file never matters to the README.** Add it to `ignore`.
+   - **The README needs a human update.** Edit the prose outside the markers, then run `update --accept-stale` so the recorded commit moves on.
+   - **Someone edited inside the markers.** Move their text outside the markers and run `update --force` to reclaim the section, or disable the section and delete the markers if it should stay hand-written.
+   - **Markers are missing.** Re-run `init`; it only inserts what is absent.
+   - **Extractor error or low confidence.** Fix the malformed input, or lower `confidenceThreshold` if the heuristic is being too cautious for your layout.
+3. Run `plan` again. When it reports no flags, `update` advances `lastSha` on its own.
 
 ## Configuration
 
-`.readme-sync.yml`, validated with zod (unknown keys are errors). A JSON schema for editor completion lives at [`schema/readme-sync.schema.json`](schema/readme-sync.schema.json).
+`.readme-sync.yml`, validated with zod (unknown keys are errors). A JSON schema for editor completion lives at [`schema/readme-sync.schema.json`](schema/readme-sync.schema.json); add `# yaml-language-server: $schema=…` at the top of the file to get it in VS Code.
 
 ```yaml
 version: 1
@@ -123,7 +255,25 @@ changelog: { maxEntries: 50 }
 llm: { enabled: false }      # optional, changelog highlights only, validated + cached
 ```
 
-The LLM is **off by default**. When enabled (`ANTHROPIC_API_KEY`), it only ever sees commit subjects and diff stats, and every bullet it returns must cite a real commit SHA or the whole response is discarded.
+The LLM is **off by default**. When enabled (`ANTHROPIC_API_KEY`), it only ever sees commit subjects and diff stats, and every bullet it returns must cite a real commit SHA or the whole response is discarded. Accepted output is cached in `.readme-sync/llm-cache.json` by input hash, so the same commits always produce the same bullets.
+
+## Monorepos
+
+With `packages: []` the tool discovers npm, yarn and pnpm workspaces from `package.json` or `pnpm-workspace.yaml`. Each package gets its own README, its own state under `.readme-sync/packages/<slug>/`, and its own set of sections. The root README gets the `packages` table, `structure` and `changelog`; `api`, `commands` and `dependencies` are off at the root because a workspace root rarely has a public surface of its own.
+
+List `packages:` explicitly to take full control:
+
+```yaml
+packages:
+  - path: .
+    sections: { api: { enabled: false } }
+  - path: packages/core
+  - path: packages/cli
+    readme: docs/README.md
+    ignore: ['fixtures/**']
+```
+
+Per-package `sections` and `ignore` are merged over the root config. `--package <path>` limits a run to some of them.
 
 ## Project structure
 
@@ -358,6 +508,23 @@ pnpm install
 - Changed export `spliceRegion`: `spliceRegion(source: any, region: any, newBody: any): string` → `spliceRegion(source: string, region: MarkerRegion, newBody: string): string`
 - Changed export `StaleFlag`: `interface StaleFlag { /** Package path ("." for root). */ pkg: string; /** Section affected, or undefined when the flag is not attributable to one section. */ section?: SectionId; reason: FlagReason; message: string; /** Package-relative files that triggered the flag. */ files: string[]; }` → `interface StaleFlag { pkg: string; section?: SectionId; reason: FlagReason; message: string; files: string[]; }`
 <!-- autogen:end:changelog -->
+
+## Development
+
+```sh
+pnpm install
+pnpm build        # dist/cli, dist/index (library) and dist/action/index.js (Action bundle)
+pnpm test         # vitest; integration tests create temporary git repositories
+pnpm typecheck
+pnpm lint         # eslint + prettier --check
+pnpm check        # build + test + lint
+pnpm schema       # regenerate schema/readme-sync.schema.json from the zod schema
+node dist/cli/index.js plan -v   # run the tool on this repository
+```
+
+`dist/action/index.js` is committed so the Action can run without a build step. Rebuild and commit it whenever `src/` changes; CI fails if it is stale. CI also runs `update --check` on this repository's own README for every section except the changelog.
+
+Before changing behaviour, read [`docs/DECISIONS.md`](docs/DECISIONS.md) and add a `D-0xx` entry for any non-obvious call. The invariants (human bytes untouched, idempotency, surgical scope, determinism, fail closed, loop safety) are enforced by tests; please do not weaken them.
 
 ## Design notes
 
