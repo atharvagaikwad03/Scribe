@@ -62,3 +62,42 @@ fence swallows the end marker. Rather than trusting renderers, `spliceMany`
 re-parses its output and requires the same section ids in the same order,
 otherwise it throws a `MarkerError` and the file is never written. This turns
 a whole class of renderer bugs into a fail-closed error.
+
+## D-008: CI config only flags on add/delete
+
+The spec lists CI configuration as "surface relevant" for unmapped-file
+flags. Flagging every workflow tweak would make the stale comment noise that
+people learn to ignore. We flag CI files only when they are added or deleted
+(a new or removed pipeline changes how the project is built); modifications
+are not flagged. Users can widen this with `watchExtra` on a section.
+
+## D-009: Stale flags block `lastSha` from advancing
+
+If a run raises any stale flag, sections that *did* regenerate are still
+written and their state recorded, but `lastSha` stays where it was. The next
+run therefore re-examines the same diff and re-raises the flag until a human
+resolves it (fix markers, adjust config, `--force` for manual edits, or
+`--accept-stale` to acknowledge). This is the mechanical meaning of "fail
+closed": an unaccounted change is never silently forgotten. Cost: the diff
+range grows until resolved; extractors are cheap and idempotent so this is
+acceptable.
+
+## D-010: Makefile targets: documented subset wins
+
+If any target carries a `## description`, only documented targets are listed.
+Otherwise every plain target is listed. This follows the common
+`make help` convention without hiding everything in undocumented Makefiles.
+
+## D-011: Working-tree changes are included in the diff
+
+`plan`/`update` consider uncommitted changes as well as `lastSha..HEAD`, so a
+developer editing `package.json` locally sees the README update before
+committing. Because extractors read the working tree anyway, this keeps the
+"what changed" view and the "what we extracted" view consistent.
+
+## D-012: Docker "build" command is derived
+
+`docker build -f <file> .` is the one command we emit that is not literally
+present in a config file. A Dockerfile's only purpose is to be built, so we
+consider this reading the config, not guessing. Everything else (scripts,
+make targets, console scripts) is copied verbatim.
