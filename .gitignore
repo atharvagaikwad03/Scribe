@@ -1,0 +1,8 @@
+node_modules/
+coverage/
+*.log
+.DS_Store
+.env
+# Build output is committed for the GitHub Action bundle only (dist/action).
+dist/*
+!dist/action/

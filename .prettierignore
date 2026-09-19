@@ -1,0 +1,8 @@
+dist
+node_modules
+pnpm-lock.yaml
+coverage
+.readme-sync
+test/fixtures
+CHANGELOG.md
+*.md
